@@ -18,4 +18,9 @@ public class TestController {
 
         return ResponseEntity.status(HttpStatus.OK).body("hello" + authentication.getName() + authorities);
     }
+
+    @GetMapping("/hello")
+    public ResponseEntity<String> hello() {
+        return ResponseEntity.status(HttpStatus.OK).body("hello");
+    }
 }

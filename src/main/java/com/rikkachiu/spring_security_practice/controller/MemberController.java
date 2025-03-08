@@ -21,6 +21,8 @@ public class MemberController {
     public Member register(@RequestBody Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
 
+//        System.out.println("controller");
+
         Integer id = memberDao.createMember(member);
 
         return memberDao.getMemberById(id);
