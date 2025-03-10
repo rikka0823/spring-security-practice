@@ -15,10 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
 
 //@EnableMethodSecurity
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     @Bean
@@ -60,11 +62,14 @@ public class SecurityConfig {
                         .requestMatchers("/api2").hasAuthority("ROLE_ADMIN")
                         .requestMatchers("/api3")
                         .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasIpAddress('192.168.0.1/24')"))
-
                         .anyRequest().denyAll()
                 )
+
+                .addFilterBefore(new MyFilter2(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new MyFilter1(), BasicAuthenticationFilter.class)
                 .build();
     }
+
 
 //    @Bean
 //    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
