@@ -16,6 +16,11 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 
 //@EnableMethodSecurity
@@ -53,7 +58,7 @@ public class SecurityConfig {
                 .formLogin(Customizer.withDefaults())
 
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register").permitAll()
+                        .requestMatchers("/register", "/hello").permitAll()
                         .requestMatchers("/getMovies", "/watchFreeMovie").authenticated()
                         .requestMatchers("/watchVipMovie").hasAnyRole("ADMIN", "VIP_MEMBER")
                         .requestMatchers("/uploadMovie", "/deleteMovie").hasRole("ADMIN")
@@ -65,11 +70,26 @@ public class SecurityConfig {
                         .anyRequest().denyAll()
                 )
 
-                .addFilterBefore(new MyFilter2(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new MyFilter1(), BasicAuthenticationFilter.class)
+//                .addFilterBefore(new MyFilter2(), BasicAuthenticationFilter.class)
+//                .addFilterAfter(new MyFilter1(), BasicAuthenticationFilter.class)
+
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .build();
     }
 
+    private CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("POST", "GET"));
+//        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 
 //    @Bean
 //    public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
