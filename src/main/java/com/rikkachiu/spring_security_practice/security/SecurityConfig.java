@@ -7,6 +7,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +17,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -53,21 +56,30 @@ public class SecurityConfig {
 //                .build();
 
         return http
-                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+
+//                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler())
+                        .ignoringRequestMatchers("/hello")
+                )
+
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
 
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/register", "/hello").permitAll()
-                        .requestMatchers("/getMovies", "/watchFreeMovie").authenticated()
-                        .requestMatchers("/watchVipMovie").hasAnyRole("ADMIN", "VIP_MEMBER")
-                        .requestMatchers("/uploadMovie", "/deleteMovie").hasRole("ADMIN")
+                                .requestMatchers("/register", "hello").permitAll()
+                                .requestMatchers("/getMovies", "/watchFreeMovie").authenticated()
+                                .requestMatchers("/watchVipMovie").hasAnyRole("ADMIN", "VIP_MEMBER")
+                                .requestMatchers("/uploadMovie", "/deleteMovie").hasRole("ADMIN")
 
-                        .requestMatchers("/api1").hasRole("ADMIN")
-                        .requestMatchers("/api2").hasAuthority("ROLE_ADMIN")
-                        .requestMatchers("/api3")
-                        .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasIpAddress('192.168.0.1/24')"))
-                        .anyRequest().denyAll()
+//                        .requestMatchers("/api1").hasRole("ADMIN")
+//                        .requestMatchers("/api2").hasAuthority("ROLE_ADMIN")
+//                        .requestMatchers("/api3")
+//                        .access(new WebExpressionAuthorizationManager("hasRole('ADMIN') AND hasIpAddress('192.168.0.1/24')"))
+//                                .anyRequest().denyAll()
                 )
 
 //                .addFilterBefore(new MyFilter2(), BasicAuthenticationFilter.class)
@@ -89,6 +101,12 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    private CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler() {
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+        csrfTokenRequestAttributeHandler.setCsrfRequestAttributeName(null);
+        return csrfTokenRequestAttributeHandler;
     }
 
 //    @Bean

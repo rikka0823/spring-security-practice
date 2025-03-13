@@ -1,17 +1,19 @@
 package com.rikkachiu.spring_security_practice.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class MovieController {
 
-    @RequestMapping("/getMovies")
+    @GetMapping("/getMovies")
     public String getMovies() {
         return "取得電影列表";
     }
 
-    @RequestMapping("/watchFreeMovie")
+    @PostMapping("/watchFreeMovie")
     public String watchFreeMovie() {
         return "觀看免費電影";
     }
@@ -26,7 +28,7 @@ public class MovieController {
         return "上傳新電影";
     }
 
-    @RequestMapping("/deleteMovie")
+    @RequestMapping ("/deleteMovie")
     public String deleteMovie() {
         return "刪除電影";
     }
