@@ -70,7 +70,7 @@ public class SecurityConfig {
                 .formLogin(Customizer.withDefaults())
 
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/register", "hello").permitAll()
+                                .requestMatchers("/register", "/hello").permitAll()
                                 .requestMatchers("/getMovies", "/watchFreeMovie").authenticated()
                                 .requestMatchers("/watchVipMovie").hasAnyRole("ADMIN", "VIP_MEMBER")
                                 .requestMatchers("/uploadMovie", "/deleteMovie").hasRole("ADMIN")
