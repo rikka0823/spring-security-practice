@@ -63,14 +63,14 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(csrfTokenRequestAttributeHandler())
-                        .ignoringRequestMatchers("/hello")
+                        .ignoringRequestMatchers("/hello", "/google/**")
                 )
 
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
 
                 .authorizeHttpRequests(request -> request
-                                .requestMatchers("/register", "/hello").permitAll()
+                                .requestMatchers("/register", "/hello", "/google/**").permitAll()
                                 .requestMatchers("/getMovies", "/watchFreeMovie").authenticated()
                                 .requestMatchers("/watchVipMovie").hasAnyRole("ADMIN", "VIP_MEMBER")
                                 .requestMatchers("/uploadMovie", "/deleteMovie").hasRole("ADMIN")
