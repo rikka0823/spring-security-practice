@@ -1,5 +1,7 @@
 package com.rikkachiu.spring_security_practice.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,7 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class MovieController {
 
     @GetMapping("/getMovies")
-    public String getMovies() {
+    public String getMovies(@AuthenticationPrincipal Jwt jwt) {
+        System.out.println(jwt.getClaims().get("email"));
         return "取得電影列表";
     }
 
